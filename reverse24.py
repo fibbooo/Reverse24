@@ -69,6 +69,9 @@ def pretty_results(sumsdict, numcards, numberofmax=10):
     # takes in a rotated-sum dictionary  explicitly from rotate_sum
     # num cards is number of cards that we're testing
 
+    #The only frame which I don't like is count number (it should display the count above)
+    #and also uh the histogram by int has a useless y bar, but I really dont know what to do about that one....
+
     # Im aware that this function is far too long and pretty ugly
     # I don't really know how to improve it
     # breaking it up into a function for each subplot would do it, but each function is only used once, so
@@ -108,8 +111,8 @@ def pretty_results(sumsdict, numcards, numberofmax=10):
     axs[0, 0].hlines(y=axs[0, 0].get_yticks()[2:-2], xmin=min(xticks), xmax=max(xticks), linestyles='dotted')
 
     axs[0, 0].set_title('Small Integer solutions ')
-    #axs[0,0].set_xlabel('Number')
-    #axs[0,0].set_ylabel('Chance a dealt hand has a solution')
+    axs[0,0].set_xlabel('Number')
+    axs[0,0].set_ylabel('% hands \n with solution')
 
 
     # Plot int differences
@@ -120,8 +123,8 @@ def pretty_results(sumsdict, numcards, numberofmax=10):
     axs[0, 1].hlines(y=axs[0, 1].get_yticks()[1:-1], xmin=min(xticks), xmax=max(xticks), linestyles='dotted')
 
     axs[0, 1].set_title('(Weight-Class) \n for each small integer solution')
-    #axs[0,1].set_xlabel('Number')
-    #axs[0,1].set_ylabel('Difference in chance of Weight-Class')
+    axs[0,1].set_xlabel('Number')
+    axs[0,1].set_ylabel('% Difference ')
     # Plotting every single value looks bad; this 'smooths it out' by grouping by nearest int
     # Creating a histogram, using likelyhood of getting that number as its weight
     # All buckets are all the results that fall larger than that integer
@@ -144,25 +147,22 @@ def pretty_results(sumsdict, numcards, numberofmax=10):
     # axs[1, 0].hist(sums.index,bins=sums.index, weights=sums['CountClass'])
     axs[1, 0].set_title('Histogram by Int')
     axs[1, 0].set_yscale('log')
-    #axs[1,0].set_xlabel('Number')
-    #axs[1,0].set_ylabel('Non-independent sum of probability')
+    axs[1,0].set_xlabel('Number')
+    axs[1,0].set_ylabel('Non-independent \n % sum by int')
 
     # Same plot, but for weights instead of class; the 'duplicity' shows up more, in that the sums are well above 1!
     axs[1, 1].hist(histprep.index, bins=int(n), weights=histprep['CountWeight'],
                    color='orange')
     axs[1, 1].set_title('Histogram by Int')
     axs[1, 1].set_yscale('log')
-    #axs[1,1].set_xlabel('Number')
-    #axs[1,1].set_ylabel('Non-independent sum of probability')
+    axs[1,1].set_xlabel('Number')
+    axs[1,1].set_ylabel('Non-independent \n % sum by int')
 
     # histogram of counts, i.e. buckets by how many times a number is hit
-    axs[2, 0].hist(sums.transpose())
+    axs[2, 0].hist(sums.transpose(), bins=[x/10 for x in range(0,10)], log=True)
     axs[2, 0].set_title('Chance succeed vs Count')
-    axs[2, 0].set_yscale('log')
-    axs[2, 0].hlines(y=axs[2, 0].get_yticks()[2:-2], xmin=0,
-                     xmax=axs[2, 0].get_xticks()[-2], linestyles='dotted')
-    axs[2,0].set_xlabel('Chance that a N game is solveable')
-    axs[2,0].set_ylabel('Count N')
+    axs[2,0].set_xlabel('% hands that hit a given Number')
+    axs[2,0].set_ylabel('Count Number')
 
     # Plot the most common answers, as a bar graph, so that its directly comparable
     # I do slightly fancy manipulations to insure top 10 of both weights and calsses show up
@@ -180,7 +180,9 @@ def pretty_results(sumsdict, numcards, numberofmax=10):
     axs[2, 1].set_ylim([ylow * .9, min([yhigh * 1.1, 1])])
     axs[2, 1].hlines(y=axs[2, 1].get_yticks()[1:-1], xmin=min(axs[2, 1].get_xticks()),
                      xmax=max(axs[2, 1].get_xticks()), linestyles='dotted')
-
+    axs[2,1].set_yticks(axs[2, 1].get_yticks()[1:-1])
+    axs[2,1].set_xlabel('Number')
+    axs[2,1].set_ylabel('% Hands that solve N')
 
 
     #Plot the most common answers as a scatter plot.
@@ -208,6 +210,8 @@ def pretty_results(sumsdict, numcards, numberofmax=10):
     axs[3, 0].set_title(str(numIndices)+' most likely targets ')
     axs[3, 0].hlines(y=axs[3, 0].get_yticks()[1:-1], xmin=min(axs[3, 0].get_xticks()),
                      xmax=max(axs[3, 0].get_xticks()), linestyles='dotted')
+    axs[3,0].set_xlabel('Number')
+    axs[3,0].set_ylabel('% Hands that solve N')
 
     handles, labels = axs[2, 1].get_legend_handles_labels()
     labels = ['By Class, i.e. \n [1,1,1,1] counts once, \n [1,2,3,4] counts once',
@@ -236,5 +240,3 @@ def main(numcards):
     t = (time.time() - start_time)
     print("Total of %s seconds ---" % t)
 
-
-main(4)
